@@ -1,4 +1,9 @@
+import 'dart:html';
+
+import 'package:chattingapp/models/user_model.dart';
 import 'package:chattingapp/pages/complete_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +15,55 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController cPasswordController = TextEditingController();
+
+  void checkValues() {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    String cPassword = cPasswordController.text.trim();
+
+    if (email == "" || password == "" || cPassword == "") {
+      print("please fill all the fields!");
+    } else if (password != cPassword) {
+      print("Password and confirm password not matched");
+    } else {
+      signUp(email, password);
+    }
+  }
+
+  void signUp(String email, String password) async {
+    UserCredential? Credential;
+    try {
+      Credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (ex) {
+      print(ex.code.toString());
+    }
+
+    if (Credential != null) {
+      String uid = Credential.user!.uid;
+      UserModel newUser = UserModel(
+        uid: uid,
+        email: email,
+        fullname: "",
+        profilepic: "",
+      );
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .set(newUser.toMaP())
+          .then((value) {
+        print("New user created!");
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return CompliteProfile(
+              userModel: newUser, firebaseUser: Credential!.user!);
+        }));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,22 +84,27 @@ class _SignUpState extends State<SignUp> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const TextField(
-                    decoration: InputDecoration(labelText: "E-mail Address"),
+                  TextField(
+                    controller: emailController,
+                    decoration:
+                        const InputDecoration(labelText: "E-mail Address"),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  const TextField(
+                  TextField(
+                    controller: passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(labelText: "Password"),
+                    decoration: const InputDecoration(labelText: "Password"),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  const TextField(
+                  TextField(
+                    controller: cPasswordController,
                     obscureText: true,
-                    decoration: InputDecoration(labelText: "Confirm Password"),
+                    decoration:
+                        const InputDecoration(labelText: "Confirm Password"),
                   ),
                   const SizedBox(
                     height: 20,
@@ -53,9 +112,7 @@ class _SignUpState extends State<SignUp> {
                   CupertinoButton(
                       color: Theme.of(context).colorScheme.secondary,
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return const CompliteProfile();
-                        }));
+                        checkValues();
                       },
                       child: const Text(
                         "Sign Up",

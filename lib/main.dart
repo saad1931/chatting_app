@@ -1,3 +1,4 @@
+import 'package:chattingapp/pages/complete_profile.dart';
 import 'package:chattingapp/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';

@@ -1,6 +1,14 @@
+import 'dart:developer';
+import 'dart:html';
+
+import 'package:chattingapp/models/user_model.dart';
 import 'package:chattingapp/pages/sign_up_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'homepage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,6 +18,44 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void checkValues() {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (email == "" || password == "") {
+      print("Please fill all the fields!");
+    } else {
+      login(email, password);
+    }
+  }
+
+  void login(String email, String password) async {
+    UserCredential? credential;
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (ex) {
+      print(ex.code.toString());
+    }
+    if (credential != null) {
+      String uid = credential.user!.uid;
+
+      DocumentSnapshot userData =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      UserModel userModel =
+          UserModel.fromMap(userData.data() as Map<String, dynamic>);
+
+      log("Login Successfully!");
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return HomePage(
+              userModel: userModel, firebaseUser:credential.user!);
+        }));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,22 +76,27 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  const TextField(
-                    decoration: InputDecoration(labelText: "E-mail Address"),
+                  TextField(
+                    controller: emailController,
+                    decoration:
+                        const InputDecoration(labelText: "E-mail Address"),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  const TextField(
+                  TextField(
+                    controller: passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(labelText: "Password"),
+                    decoration: const InputDecoration(labelText: "Password"),
                   ),
                   const SizedBox(
                     height: 30,
                   ),
                   CupertinoButton(
                       color: Theme.of(context).colorScheme.secondary,
-                      onPressed: () {},
+                      onPressed: () {
+                        checkValues();
+                      },
                       child: const Text(
                         "Log In",
                       ))
