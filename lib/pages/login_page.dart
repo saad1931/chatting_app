@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 import 'dart:html';
 
@@ -7,7 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'homepage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     if (email == "" || password == "") {
       print("Please fill all the fields!");
     } else {
+      
       login(email, password);
     }
   }
@@ -35,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   void login(String email, String password) async {
     UserCredential? credential;
     try {
-      await FirebaseAuth.instance
+      credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
       print(ex.code.toString());
@@ -49,9 +51,10 @@ class _LoginPageState extends State<LoginPage> {
           UserModel.fromMap(userData.data() as Map<String, dynamic>);
 
       log("Login Successfully!");
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return HomePage(
-              userModel: userModel, firebaseUser:credential.user!);
+              userModel: userModel, firebaseUser:credential!.user!
+              );
         }));
     }
   }
@@ -70,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                     "Chatting App",
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 45,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(

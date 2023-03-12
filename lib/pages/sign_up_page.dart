@@ -1,4 +1,3 @@
-import 'dart:html';
 
 import 'package:chattingapp/models/user_model.dart';
 import 'package:chattingapp/pages/complete_profile.dart';

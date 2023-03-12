@@ -83,8 +83,9 @@ class _CompliteProfileState extends State<CompliteProfile> {
   void checkValues() {
     String fullname = fullNameController.text.trim();
 
-    if (fullname == "" || imageFile == null) {
-      print("please fill all fields");
+    if (fullname == "" ) {
+      imageFile == null;
+      print("please fill fullname field");
     } else {
       uploadData();
       log("Data uploaded..");
@@ -92,18 +93,18 @@ class _CompliteProfileState extends State<CompliteProfile> {
   }
 
   void uploadData() async {
-    UploadTask uploadTask = FirebaseStorage.instance
-        .ref("prifilepictures")
-        .child(widget.userModel.uid.toString())
-        .putFile(imageFile!);
+    // UploadTask uploadTask = FirebaseStorage.instance
+    //     .ref("prifilepictures")
+    //     .child(widget.userModel.uid.toString())
+    //     .putFile(imageFile!);
 
-    TaskSnapshot snapshot = await uploadTask;
+    // TaskSnapshot snapshot = await uploadTask;
 
-    String imageUrl = await snapshot.ref.getDownloadURL();
-    String fullname = fullNameController.text.trim();
+    // String imageUrl = await snapshot.ref.getDownloadURL();
+     String fullname = fullNameController.text.trim();
 
     widget.userModel.fullname = fullname;
-    widget.userModel.profilepic = imageUrl;
+    //widget.userModel.profilepic = imageUrl;
 
     await FirebaseFirestore.instance
         .collection("users")
@@ -112,9 +113,9 @@ class _CompliteProfileState extends State<CompliteProfile> {
         .then((value) {
       log("Data uploaded");
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomePage(
-              userModel: widget.userModel, firebaseUser:widget.firebaseUser);
-        }));
+        return HomePage(
+            userModel: widget.userModel, firebaseUser: widget.firebaseUser);
+      }));
     });
   }
 
