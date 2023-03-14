@@ -7,7 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
+var uuid = Uuid();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
@@ -23,19 +25,20 @@ void main() async {
     await Firebase.initializeApp();
   }
   User? currentUser = FirebaseAuth.instance.currentUser;
-  if(currentUser != null){
-    UserModel? thisUserModel =await FirebaseHelper.getUserModelById(currentUser.uid);
-    if(thisUserModel != null){
-      runApp( MyAppLoggedIn(userModel:thisUserModel ,firebaseUser: currentUser,));
-    }
-    else{
+  if (currentUser != null) {
+    UserModel? thisUserModel =
+        await FirebaseHelper.getUserModelById(currentUser.uid);
+    if (thisUserModel != null) {
+      runApp(MyAppLoggedIn(
+        userModel: thisUserModel,
+        firebaseUser: currentUser,
+      ));
+    } else {
       runApp(const MyApp());
     }
-  }
-  else{
+  } else {
     runApp(const MyApp());
   }
-  
 }
 
 //Not logged in
