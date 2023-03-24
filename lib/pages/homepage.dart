@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously, avoid_unnecessary_containers
+
+import 'package:chattingapp/models/Ui_helper.dart';
 import 'package:chattingapp/models/chat_room_model.dart';
 import 'package:chattingapp/models/firebase_helper.dart';
 import 'package:chattingapp/models/user_model.dart';
@@ -12,7 +15,9 @@ class HomePage extends StatefulWidget {
   final UserModel userModel;
   final User firebaseUser;
 
-  const HomePage({Key? key, required this.userModel, required this.firebaseUser}) : super(key: key);
+  const HomePage(
+      {Key? key, required this.userModel, required this.firebaseUser})
+      : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -24,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Chat App"),
+        title: const Text("Chat App"),
         actions: [
           IconButton(
             onPressed: () async {
@@ -32,41 +37,49 @@ class _HomePageState extends State<HomePage> {
               Navigator.popUntil(context, (route) => route.isFirst);
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return LoginPage();
-                  }
-                ),
+                MaterialPageRoute(builder: (context) {
+                  return const LoginPage();
+                }),
               );
             },
-            icon: Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app),
           ),
         ],
       ),
       body: SafeArea(
         child: Container(
           child: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection("chatrooms").where("participants.${widget.userModel.uid}", isEqualTo: true).snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection("chatrooms")
+                .orderBy("createdon",descending: true)
+                .where("users",arrayContains: widget.userModel.uid)
+                .snapshots(),
             builder: (context, snapshot) {
-              if(snapshot.connectionState == ConnectionState.active) {
-                if(snapshot.hasData) {
-                  QuerySnapshot chatRoomSnapshot = snapshot.data as QuerySnapshot;
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  QuerySnapshot chatRoomSnapshot =
+                      snapshot.data as QuerySnapshot;
 
                   return ListView.builder(
                     itemCount: chatRoomSnapshot.docs.length,
                     itemBuilder: (context, index) {
-                      ChatRoomModel chatRoomModel = ChatRoomModel.fromMap(chatRoomSnapshot.docs[index].data() as Map<String, dynamic>);
+                      ChatRoomModel chatRoomModel = ChatRoomModel.fromMap(
+                          chatRoomSnapshot.docs[index].data()
+                              as Map<String, dynamic>);
 
-                      Map<String, dynamic> participants = chatRoomModel.participants!;
+                      Map<String, dynamic> participants =
+                          chatRoomModel.participants!;
 
                       List<String> participantKeys = participants.keys.toList();
                       participantKeys.remove(widget.userModel.uid);
 
                       return FutureBuilder(
-                        future: FirebaseHelper.getUserModelById(participantKeys[0]),
+                        future:
+                            FirebaseHelper.getUserModelById(participantKeys[0]),
                         builder: (context, userData) {
-                          if(userData.connectionState == ConnectionState.done) {
-                            if(userData.data != null) {
+                          if (userData.connectionState ==
+                              ConnectionState.done) {
+                            if (userData.data != null) {
                               UserModel targetUser = userData.data as UserModel;
 
                               return ListTile(
@@ -87,36 +100,41 @@ class _HomePageState extends State<HomePage> {
                                 //   backgroundImage: NetworkImage(targetUser.profilepic.toString()),
                                 // ),
                                 title: Text(targetUser.fullname.toString()),
-                                subtitle: (chatRoomModel.lastMessage.toString() != "") ? Text(chatRoomModel.lastMessage.toString()) : Text("Say hi to your new friend!", style: TextStyle(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),),
+                                subtitle: (chatRoomModel.lastMessage
+                                            .toString() !=
+                                        "")
+                                    ? Text(chatRoomModel.lastMessage.toString())
+                                    : Text(
+                                        "Say hi to your new friend!",
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                      ),
                               );
-                            }
-                            else {
+                            } else {
                               return Container();
                             }
-                          }
-                          else {
+                          } else {
                             return Container();
                           }
                         },
                       );
                     },
                   );
-                }
-                else if(snapshot.hasError) {
+                } else if (snapshot.hasError) {
+                  print(snapshot.error.toString());
                   return Center(
                     child: Text(snapshot.error.toString()),
                   );
-                }
-                else {
-                  return Center(
+                } else {
+                  return const Center(
                     child: Text("No Chats"),
                   );
                 }
-              }
-              else {
-                return Center(
+              } else {
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
@@ -126,11 +144,13 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return SearchPage(userModel: widget.userModel, firebaseUser: widget.firebaseUser);
+            return SearchPage(
+                userModel: widget.userModel, firebaseUser: widget.firebaseUser);
           }));
         },
-        child: Icon(Icons.search),
+        child: const Icon(Icons.search),
       ),
     );
   }

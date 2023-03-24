@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_is_empty
+// ignore_for_file: prefer_is_empty, use_build_context_synchronously
 
 import 'dart:developer';
 import 'package:chattingapp/main.dart';
@@ -46,6 +46,8 @@ class _SearchPageState extends State<SearchPage> {
           widget.userModel.uid.toString(): true,
           targetUser.uid.toString(): true,
         },
+        users: [widget.userModel.uid.toString(),targetUser.uid.toString()],
+        createdon: DateTime.now(),
       );
 
       await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
@@ -62,11 +64,11 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Search"),
+        title: const Text("Search"),
       ),
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 10,
           ),
@@ -75,22 +77,22 @@ class _SearchPageState extends State<SearchPage> {
 
               TextField(
                 controller: searchController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Email Address"
                 ),
               ),
 
-              SizedBox(height: 20,),
+              const SizedBox(height: 20,),
 
               CupertinoButton(
                 onPressed: () {
                   setState(() {});
                 },
                 color: Theme.of(context).colorScheme.secondary,
-                child: Text("Search"),
+                child: const Text("Search"),
               ),
 
-              SizedBox(height: 20,),
+              const SizedBox(height: 20,),
 
               StreamBuilder(
                 stream: FirebaseFirestore.instance.collection("users").where("email", isEqualTo: searchController.text).where("email", isNotEqualTo: widget.userModel.email).snapshots(),
@@ -128,23 +130,23 @@ class _SearchPageState extends State<SearchPage> {
                           // ),
                           title: Text(searchedUser.fullname!),
                           subtitle: Text(searchedUser.email!),
-                          trailing: Icon(Icons.keyboard_arrow_right),
+                          trailing: const Icon(Icons.keyboard_arrow_right),
                         );
                       }
                       else {
-                        return Text("No results found!");
+                        return const Text("No results found!");
                       }
                       
                     }
                     else if(snapshot.hasError) {
-                      return Text("An error occured!");
+                      return const Text("An error occured!");
                     }
                     else {
-                      return Text("No results found!");
+                      return const Text("No results found!");
                     }
                   }
                   else {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }
                 }
               ),

@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'dart:html';
 
+import 'package:chattingapp/models/Ui_helper.dart';
 import 'package:chattingapp/models/user_model.dart';
 import 'package:chattingapp/pages/sign_up_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,20 +28,23 @@ class _LoginPageState extends State<LoginPage> {
     String password = passwordController.text.trim();
 
     if (email == "" || password == "") {
+      UIHelper.showAlertDialog(context, "In complete data", "Please fill all the fields.");
       print("Please fill all the fields!");
     } else {
-      
       login(email, password);
     }
   }
 
   void login(String email, String password) async {
     UserCredential? credential;
+    UIHelper.showLoadingDialog(context, "Logging In...");
     try {
       credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (ex) {
-      print(ex.code.toString());
+      Navigator.pop(context);
+      UIHelper.showAlertDialog(context, "An error occured", ex.message.toString());
+      //print(ex.code.toString());
     }
     if (credential != null) {
       String uid = credential.user!.uid;
@@ -51,11 +55,10 @@ class _LoginPageState extends State<LoginPage> {
           UserModel.fromMap(userData.data() as Map<String, dynamic>);
 
       log("Login Successfully!");
+      Navigator.popUntil(context, (route) => route.isFirst);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-          return HomePage(
-              userModel: userModel, firebaseUser:credential!.user!
-              );
-        }));
+        return HomePage(userModel: userModel, firebaseUser: credential!.user!);
+      }));
     }
   }
 

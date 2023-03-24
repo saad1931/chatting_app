@@ -1,6 +1,5 @@
 import 'package:chattingapp/models/firebase_helper.dart';
 import 'package:chattingapp/models/user_model.dart';
-import 'package:chattingapp/pages/complete_profile.dart';
 import 'package:chattingapp/pages/homepage.dart';
 import 'package:chattingapp/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';

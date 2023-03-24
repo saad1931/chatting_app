@@ -61,7 +61,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             //   backgroundImage: NetworkImage(widget.targetUser.profilepic.toString()),
             // ),
 
-            SizedBox(width: 10,),
+            const SizedBox(width: 10,),
 
             Text(widget.targetUser.fullname.toString()),
 
@@ -76,7 +76,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               // This is where the chats will go
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 10
                   ),
                   child: StreamBuilder(
@@ -96,10 +96,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                 mainAxisAlignment: (currentMessage.sender == widget.userModel.uid) ? MainAxisAlignment.end : MainAxisAlignment.start,
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.symmetric(
+                                    margin: const EdgeInsets.symmetric(
                                       vertical: 2,
                                     ),
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                       vertical: 10,
                                       horizontal: 10,
                                     ),
@@ -109,7 +109,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                     ),
                                     child: Text(
                                       currentMessage.text.toString(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     )
@@ -120,18 +120,18 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                           );
                         }
                         else if(snapshot.hasError) {
-                          return Center(
+                          return const Center(
                             child: Text("An error occured! Please check your internet connection."),
                           );
                         }
                         else {
-                          return Center(
+                          return const Center(
                             child: Text("Say hi to your new friend"),
                           );
                         }
                       }
                       else {
-                        return Center(
+                        return const Center(
                           child: CircularProgressIndicator(),
                         );
                       }
@@ -142,7 +142,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
               Container(
                 color: Colors.grey[200],
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 15,
                   vertical: 5
                 ),
@@ -153,7 +153,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       child: TextField(
                         controller: messageController,
                         maxLines: null,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: "Enter message"
                         ),
